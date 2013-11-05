@@ -105,7 +105,7 @@ class StandaloneSchedulerBackend(scheduler: ClusterScheduler, actorSystem: Actor
       case DisassociatedEvent(_, remoteAddress, _) =>
         addressToExecutorId.get(remoteAddress).foreach(removeExecutor(_, "remote Akka client disconnected"))
 
-      case AssociationErrorEvent(_, _, remoteAddress, _) =>
+      case AssociationErrorEvent(_, _, remoteAddress, _, _) =>
         addressToExecutorId.get(remoteAddress).foreach(removeExecutor(_, "remote Akka client shutdown"))
     }
 

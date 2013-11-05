@@ -186,7 +186,7 @@ private[spark] class Master(host: String, port: Int, webUiPort: Int) extends Act
       addressToApp.get(address).foreach(finishApplication)
     }
 
-    case AssociationErrorEvent(_, _, address, _) => {
+    case AssociationErrorEvent(_, _, address, _, _) => {
       // The disconnected client could've been either a worker or an app; remove whichever it was
       addressToWorker.get(address).foreach(removeWorker)
       addressToApp.get(address).foreach(finishApplication)

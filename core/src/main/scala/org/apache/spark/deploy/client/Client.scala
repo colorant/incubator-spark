@@ -102,7 +102,7 @@ private[spark] class Client(
         markDisconnected()
         context.stop(self)
 
-      case AssociationErrorEvent(_, _, address, _) if address == masterAddress =>
+      case AssociationErrorEvent(_, _, address, _, _) if address == masterAddress =>
         logError("Connection to master failed; stopping client")
         markDisconnected()
         context.stop(self)
