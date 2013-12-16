@@ -54,7 +54,7 @@ class WorkerLauncher(args: ApplicationMasterArguments, conf: Configuration) exte
   // This actor just working as a monitor to watch on Driver Actor.
   class MonitorActor(driverUrl: String) extends Actor {
 
-    var driver: ActorSelection = null
+    var driver: ActorSelection = _
 
     override def preStart() {
       logInfo("Listen to driver: " + driverUrl)
@@ -64,7 +64,7 @@ class WorkerLauncher(args: ApplicationMasterArguments, conf: Configuration) exte
 
     override def receive = {
       case x: DisassociatedEvent =>
-        logInfo("Driver terminated or disconnected! Shutting down.")
+        logInfo("Driver terminated or disconnected! Shutting down. $x")
         driverClosed = true
     }
   }
