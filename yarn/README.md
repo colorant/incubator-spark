@@ -7,6 +7,6 @@ Hadoop Yarn related codes are organized in separate directories for easy managem
  * alpha / stable : Codes that involve specific version of Hadoop YARN API.
 
   alpha represents 0.23 and 2.0.x
-  stable represents 2.2 and later, until the API is break again.
+  stable represents 2.2 and later, until the API changes again.
 
 alpha / stable will build together with common dir into a single jar
