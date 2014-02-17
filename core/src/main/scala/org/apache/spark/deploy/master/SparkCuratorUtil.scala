@@ -17,26 +17,24 @@
 
 package org.apache.spark.deploy.master
 
-sealed trait MasterMessages extends Serializable
+import org.apache.spark.{SparkConf, Logging}
+import org.apache.curator.framework.CuratorFrameworkFactory
+import org.apache.curator.retry.ExponentialBackoffRetry
 
-/** Contains messages seen only by the Master and its associated entities. */
-private[master] object MasterMessages {
 
-  // LeaderElectionAgent to Master
+object SparkCuratorUtil extends Logging {
 
-  case object ElectedLeader
+  val ZK_CONNECTION_TIMEOUT_MILLIS = 15000
+  val ZK_SESSION_TIMEOUT_MILLIS = 60000
+  val RETRY_WAIT_MILLIS = 5000
+  val MAX_RECONNECT_ATTEMPTS = 3
 
-  case object RevokedLeadership
-
-  // Actor System to Master
-
-  case object CheckForWorkerTimeOut
-
-  case class BeginRecovery(storedApps: Seq[ApplicationInfo], storedWorkers: Seq[WorkerInfo])
-
-  case object CompleteRecovery
-
-  case object RequestWebUIPort
-
-  case class WebUIPortResponse(webUIBoundPort: Int)
+  def newClient(conf: SparkConf) = {
+    val ZK_URL = conf.get("spark.deploy.zookeeper.url", "")
+    val zk = CuratorFrameworkFactory.newClient(ZK_URL, ZK_SESSION_TIMEOUT_MILLIS, ZK_CONNECTION_TIMEOUT_MILLIS,
+      new ExponentialBackoffRetry(RETRY_WAIT_MILLIS, MAX_RECONNECT_ATTEMPTS))
+    zk.start()
+    zk
+  }
 }
+
