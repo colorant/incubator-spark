@@ -63,8 +63,9 @@ private[spark] class ZooKeeperLeaderElectionAgent(val masterActor: ActorRef,
   override def isLeader() {
 
     // could have lost leadership when isLeader been called.
-    if (!leaderLatch.hasLeadership)
+    if (!leaderLatch.hasLeadership) {
       return
+    }
 
     logInfo("We have gained leadership")
     updateLeadershipStatus(true)
@@ -73,14 +74,13 @@ private[spark] class ZooKeeperLeaderElectionAgent(val masterActor: ActorRef,
   override def notLeader() {
 
     // could have gained leadership when notLeader been called.
-    if (leaderLatch.hasLeadership)
+    if (leaderLatch.hasLeadership) {
       return
+    }
 
     logInfo("We have lost leadership")
     updateLeadershipStatus(false)
   }
-
-
 
   def updateLeadershipStatus(isLeader: Boolean) {
     if (isLeader && status == LeadershipStatus.NOT_LEADER) {
@@ -97,3 +97,4 @@ private[spark] class ZooKeeperLeaderElectionAgent(val masterActor: ActorRef,
     val LEADER, NOT_LEADER = Value
   }
 }
+
