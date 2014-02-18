@@ -31,7 +31,7 @@ class ZooKeeperPersistenceEngine(serialization: Serialization, conf: SparkConf)
   val WORKING_DIR = conf.get("spark.deploy.zookeeper.dir", "/spark") + "/master_status"
   val zk = SparkCuratorUtil.newClient(conf)
 
-  zk.create().creatingParentsIfNeeded().forPath(WORKING_DIR)
+  SparkCuratorUtil.mkdir(zk, WORKING_DIR)
 
   override def addApplication(app: ApplicationInfo) {
     serializeIntoFile(WORKING_DIR + "/app_" + app.id, app)
