@@ -30,8 +30,8 @@ object SparkCuratorUtil extends Logging {
   val RETRY_WAIT_MILLIS = 5000
   val MAX_RECONNECT_ATTEMPTS = 3
 
-  def newClient(conf: SparkConf) = {
-    val ZK_URL = conf.get("spark.deploy.zookeeper.url", "")
+  def newClient(conf: SparkConf): CuratorFramework = {
+    val ZK_URL = conf.get("spark.deploy.zookeeper.url")
     val zk = CuratorFrameworkFactory.newClient(ZK_URL,
       ZK_SESSION_TIMEOUT_MILLIS, ZK_CONNECTION_TIMEOUT_MILLIS,
       new ExponentialBackoffRetry(RETRY_WAIT_MILLIS, MAX_RECONNECT_ATTEMPTS))
@@ -51,4 +51,3 @@ object SparkCuratorUtil extends Logging {
     }
   }
 }
-

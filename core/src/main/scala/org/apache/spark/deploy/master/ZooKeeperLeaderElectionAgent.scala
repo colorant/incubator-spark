@@ -44,12 +44,10 @@ private[spark] class ZooKeeperLeaderElectionAgent(val masterActor: ActorRef,
     leaderLatch.start()
   }
 
-
   override def preRestart(reason: scala.Throwable, message: scala.Option[scala.Any]) {
     logError("LeaderElectionAgent failed...", reason)
     super.preRestart(reason, message)
   }
-
 
   override def postStop() {
     leaderLatch.close()
@@ -61,25 +59,27 @@ private[spark] class ZooKeeperLeaderElectionAgent(val masterActor: ActorRef,
   }
 
   override def isLeader() {
+    synchronized {
+      // could have lost leadership by now.
+      if (!leaderLatch.hasLeadership) {
+        return
+      }
 
-    // could have lost leadership when isLeader been called.
-    if (!leaderLatch.hasLeadership) {
-      return
+      logInfo("We have gained leadership")
+      updateLeadershipStatus(true)
     }
-
-    logInfo("We have gained leadership")
-    updateLeadershipStatus(true)
   }
 
   override def notLeader() {
+    synchronized {
+      // could have gained leadership by now.
+      if (leaderLatch.hasLeadership) {
+        return
+      }
 
-    // could have gained leadership when notLeader been called.
-    if (leaderLatch.hasLeadership) {
-      return
+      logInfo("We have lost leadership")
+      updateLeadershipStatus(false)
     }
-
-    logInfo("We have lost leadership")
-    updateLeadershipStatus(false)
   }
 
   def updateLeadershipStatus(isLeader: Boolean) {
@@ -97,4 +97,3 @@ private[spark] class ZooKeeperLeaderElectionAgent(val masterActor: ActorRef,
     val LEADER, NOT_LEADER = Value
   }
 }
-
